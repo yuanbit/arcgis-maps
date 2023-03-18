@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>ArcGIS Maps SDK for JavaScript Tutorials: Display a map</title>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/dark/main.css">
+    <script src="https://js.arcgis.com/4.26/"></script>
+    <script src="config.js"></script>
+
+    <script>
+      require([
+        "esri/config",
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+      ], function (esriConfig, Map, MapView, FeatureLayer) {
+        esriConfig.apiKey = apiKey;
+
+        const map = new Map({
+          basemap: "arcgis-dark-gray", // Basemap layer service
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          center: [8.5417, 47.3769], // Zurich coordinates
+          zoom: 13,
+        });
+
+        const featureLayer = new FeatureLayer({
+          url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/incomeboundrieszurich/FeatureServer/0",
+          renderer: {
+            type: "simple",
+            symbol: {
+              type: "simple-fill",
+              outline: {
+                color: [128, 128, 128, 0.2],
+                width: 0.5,
+              },
+            },
+            visualVariables: [
+              {
+                type: "color",
+                field: "SteuerEinkommen_p50",
+                stops: [
+                  { value: 0, color: "rgba(255, 255, 204, 1)" },
+                  { value: 50000, color: "rgba(161, 218, 180, 1)" },
+                  { value: 100000, color: "rgba(65, 182, 196, 1)" },
+                  { value: 150000, color: "rgba(44, 127, 184, 1)" },
+                  { value: 200000, color: "rgba(37, 52, 148, 1)" },
+                ],
+                legendOptions: {
+                  title: "Income (SteuerEinkommen_p50)",
+                },
+              },
+            ],
+          },
+          popupTemplate: {
+            title: "{KreisLang}", // Set the title of the popup to the name of the district
+            content:
+              "SteuerEinkommen_p50: {SteuerEinkommen_p50}, SteuerEinkommen_p25: {SteuerEinkommen_p25}, SteuerEinkommen_p75: {SteuerEinkommen_p75}", // Set the content of the popup to display income data
+          },
+        });
+
+        map.add(featureLayer); // Add the feature layer to the
+            // Add a legend to the view
+    require(["esri/widgets/Legend"], function (Legend) {
+      const legend = new Legend({
+        view: view,
+        layerInfos: [
+          {
+            layer: featureLayer,
+            title: "Income distribution",
+          },
+        ],
+      });
+
+      view.ui.add(legend, "bottom-right");
+    });
+  });
+</script>
+</head>
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>
