@@ -46,36 +46,35 @@
             type: "simple",
             symbol: {
               type: "simple-fill",
+              color: "rgba(50, 74, 178, 0.2)",
               outline: {
-                color: [128, 128, 128, 0.2],
-                width: 0.5,
+                color: [0, 255, 255, 0.2],
+                width: 1,
               },
             },
             visualVariables: [
-              {
-                type: "color",
-                field: "SteuerEinkommen_p50",
-                stops: [
-                  { value: 0, color: "rgba(255, 255, 204, 1)" },
-                  { value: 50000, color: "rgba(161, 218, 180, 1)" },
-                  { value: 100000, color: "rgba(65, 182, 196, 1)" },
-                  { value: 150000, color: "rgba(44, 127, 184, 1)" },
-                  { value: 200000, color: "rgba(37, 52, 148, 1)" },
-                ],
-                legendOptions: {
-                  title: "Income (SteuerEinkommen_p50)",
-                },
-              },
-            ],
+        {
+          type: "color",
+          field: "SteuerEinkommen_p50",
+          stops: [
+            { value: 0, color: "rgba(255, 255, 204, 1)" },
+            { value: 50000, color: "rgba(161, 218, 180, 1)" },
+            { value: 100000, color: "rgba(65, 182, 196, 1)" },
+            { value: 150000, color: "rgba(44, 127, 184, 1)" },
+            { value: 200000, color: "rgba(37, 52, 148, 1)" },
+          ],
+          legendOptions: {
+            title: "Income (SteuerEinkommen_p50)",
           },
-          popupTemplate: {
-            title: "{KreisLang}", // Set the title of the popup to the name of the district
-            content:
-              "SteuerEinkommen_p50: {SteuerEinkommen_p50}, SteuerEinkommen_p25: {SteuerEinkommen_p25}, SteuerEinkommen_p75: {SteuerEinkommen_p75}", // Set the content of the popup to display income data
-          },
-        });
+        },
+      ],
+    },
+    outFields: ["bezeichnun", "WIR100OD1007_SteuerEinkommen_p5"],
+  });
 
-        map.add(featureLayer); // Add the feature layer to the
+  map.add(featureLayer);
+
+
             // Add a legend to the view
     require(["esri/widgets/Legend"], function (Legend) {
       const legend = new Legend({
@@ -89,11 +88,148 @@
       });
 
       view.ui.add(legend, "bottom-right");
+
+
+
+  view.ui.add(legend, "bottom-right");
+
+
+
+  view.whenLayerView(featureLayer).then(function (layerView) {
+    view.popup.autoOpenEnabled = false;
+
+    view.on("click", function (event) {
+      view.hitTest(event).then(function (response) {
+        const feature = response.results[0].graphic;
+
+        if (feature) {
+          const attributes = feature.attributes;
+          const content =
+            "<b>" +
+            attributes.bezeichnun +
+            "</b><br>" +
+            "Median Income: " +
+            (attributes.WIR100OD1007_SteuerEinkommen_p5 * 1000).toLocaleString('en', {maximumFractionDigits:0});
+          view.popup.content = content;
+          view.popup.open({
+            location: event.mapPoint,
+          });
+        }
+      });
     });
-  });
+
+//     layerView.watch("updating", function (updating) {
+//   if (!updating) {
+//     layerView.queryFeatures().then(function (results) {
+//       const features = [results]; // wrap results in an array
+//       results.forEach(function (feature) {
+//         const attributes = feature.attributes;
+//         if (attributes.WIR100OD1007_SteuerEinkommen_p5 !== undefined) {
+//           const avgValue = attributes.WIR100OD1007_SteuerEinkommen_p5 * 1000;
+
+//           const point = new Point({
+//             longitude: feature.geometry.centroid.longitude,
+//             latitude: feature.geometry.centroid.latitude
+//           });
+
+//           const textSymbol = new TextSymbol({
+//             text: `Avg: ${avgValue}`,
+//             color: "#fff",
+//             font: {
+//               size: 12,
+//               weight: "bold"
+//             }
+//           });
+
+//           const graphic = new Graphic({
+//             geometry: point,
+//             symbol: textSymbol
+//           });
+
+//           view.graphics.add(graphic);
+//         }
+//       });
+//     });
+//   }
+// });
+
+
+
+
+
+      // View all the field names
+      const query = featureLayer.createQuery();
+query.where = "1=0"; // set a where clause that always evaluates to false to return no features
+query.outFields = ["*"]; // set the outFields property to return all fields
+query.returnDistinctValues = true; // set returnDistinctValues to true to eliminate duplicate field names
+query.returnGeometry = false; // don't return any geometry
+
+featureLayer
+  .queryFeatures(query)
+  .then((result) => {
+    const fields = result.fields.map((field) => field.name);
+    console.log(fields);
+  })
+  .catch((error) => console.error(error));
+
+
+// Create a new Query object to get the average of the WIR100OD1007_SteuerEinkommen_p5 field
+
+// const query = featureLayer.createQuery();
+
+// featureLayer
+//   .queryFeatures(query)
+//   .then((result) => {
+//     result.features.forEach((feature) => {
+//       console.log(feature.attributes.WIR100OD1007_SteuerEinkommen_p5);
+//     });
+//   })
+//   .catch((error) => console.error(error));
+
+
+
+// // Execute the query and add the results to the map
+// featureLayer.queryFeatures(query).then(function (result) {
+//   const features = result.features;
+  
+//   // Loop through each feature and add a text symbol at its centroid to display the average value
+//   features.forEach(function (feature) {
+//     const attributes = feature.attributes;
+//     const avgValue = attributes.avg_WIR100OD1007_SteuerEinkommen_p5;
+    
+//     const point = new Point({
+//       longitude: feature.geometry.centroid.longitude,
+//       latitude: feature.geometry.centroid.latitude
+//     });
+
+//     const textSymbol = new TextSymbol({
+//       text: `Avg: ${avgValue}`,
+//       color: "#fff",
+//       font: {
+//         size: 12,
+//         weight: "bold"
+//       }
+//     });
+
+//     const graphic = new Graphic({
+//       geometry: point,
+//       symbol: textSymbol
+//     });
+
+//     view.graphics.add(graphic);
+//   });
+// });
+
+});
+
+
+ });
+});
 </script>
 </head>
 <body>
-  <div id="viewDiv"></div>
+  <div id="viewDiv">
+    
+  </div>
 </body>
 </html>
