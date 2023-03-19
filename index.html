@@ -32,7 +32,7 @@
         "esri/WebMap",
         "esri/config"
       ], function (esriConfig, Map, MapView, FeatureLayer, Legend, WebMap, esriConfig) {
-        esriConfig.apiKey = apiKey;
+        esriConfig.apiKey = ${{ secrets.API_KEY }};
 
         const basicLayer = new FeatureLayer({
     url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/2020basic/FeatureServer/0",
