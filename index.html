@@ -19,10 +19,14 @@
     <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/dark/main.css">
     <script src="https://js.arcgis.com/4.26/"></script>
     <script src="config.js"></script>
-
+    
 
 
     <script>
+
+//require('dotenv').config()
+//const apiKey = process.env.API_KEY
+
       require([
         "esri/config",
         "esri/Map",
@@ -32,7 +36,8 @@
         "esri/WebMap",
         "esri/config"
       ], function (esriConfig, Map, MapView, FeatureLayer, Legend, WebMap, esriConfig) {
-        esriConfig.apiKey = ${{ secrets.API_KEY }};
+        esriConfig.apiKey = {process.env.API_KEY};
+      
 
         const basicLayer = new FeatureLayer({
     url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/2020basic/FeatureServer/0",
