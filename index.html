@@ -43,13 +43,17 @@
 
 
 const boundryLayer = new FeatureLayer({
-  url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/zurichboundries/FeatureServer/0"
+  url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/zurichboundries/FeatureServer/0",
 });
+
 map.add(boundryLayer);
+
 
 const dataLayer = new FeatureLayer({
   url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/testdata/FeatureServer"
 });
+
+
 
 const query = dataLayer.createQuery();
 query.where = "StichtagDatJahr = 2020 AND SteuerTarifLang = 'Grundtarif'";
@@ -59,12 +63,8 @@ dataLayer.queryFeatures(query).then(function(response){
   // Create a dictionary to hold the SteuerEinkommen_p50 values for each district
   const districtData = {};
   response.features.forEach(function(feature){
-    districtData[feature.attributes.KreisLang] = feature.attributes.SteuerEinkommen_p50;
+    districtData[feature.attributes.KreisLang] = (Math.round(feature.attributes.SteuerEinkommen_p50)*1000);
   });
-
- 
-
-
 
 
   // Set up a listener for the click event on the boundary layer
@@ -77,13 +77,10 @@ dataLayer.queryFeatures(query).then(function(response){
       boundryLayer.queryFeatures(query).then(function(response) {
         const attributes = response.features[0].attributes;
 
-        console.log(attributes.bezeichnun);
-        console.log(districtData[attributes.bezeichnun]);
-
           // Set up the popup for the boundary layer
     const popupTemplate = {
     title: "{bezeichnun}",
-    content: "Median Income: " + (Math.round(districtData[attributes.bezeichnun])*1000).toLocaleString('en', {maximumFractionDigits: 0}) + " CHF",
+    content: "Median Income: " + districtData[attributes.bezeichnun].toLocaleString('en', {maximumFractionDigits: 0}) + " CHF",
   };
   boundryLayer.popupTemplate = popupTemplate;
 
@@ -91,26 +88,43 @@ dataLayer.queryFeatures(query).then(function(response){
     }
   });
 });
+
+
+
+
+
+// Create a new field in the boundary layer's attribute table to hold the income values
+// const incomeField = {
+//   name: "Median_Income",
+//   alias: "Median Income",
+//   type: "integer"
+// };
+// boundryLayer.fields.push(incomeField);
+
+// const query = boundryLayer.createQuery();
+
+boundryLayer.queryFeatures(query).then(function(response) {
+        const attributes = response.features[0].attributes;
+        // Loop through each feature in the boundary layer and assign the income value from the dictionary to the new field
+        response.features.forEach(function(feature) {
+          const kreis = attributes.bezeichnun;
+          if (kreis in districtData) {
+            attributes.Median_Income = districtData[kreis];
+  }
+});
+
+
+
+
+
+
+
 });
 });
+});
 
 
 
-        // Get the value of SteuerEinkommen_p50 for the district from the dictionary
-        //const medianIncome = (Math.round(districtData[attributes.bezeichnun])*1000).toLocaleString('en', {maximumFractionDigits: 0}) + " CHF";
-      //   const medianIncome = "hi"
-       
-
-      //   // Update the popup content with the median income
-      //   const content = popupTemplate.content.replace('{medianIncome}', medianIncome);
-      //   boundryLayer.popupTemplate.content = content;
-
-      //   // Open the popup
-      //   view.popup.open({
-      //     location: event.mapPoint,
-      //     features: [feature],
-      //   });
-      // }
 
 
 
@@ -123,7 +137,7 @@ dataLayer.queryFeatures(query).then(function(response){
 </head>
 <body>
   <div id="viewDiv">
-    
+
   </div>
 </body>
 </html>

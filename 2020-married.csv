@@ -1,0 +1,13 @@
+StichtagDatJahr,KreisSort,KreisCd,KreisLang,SteuerTarifSort,SteuerTarifCd,SteuerTarifLang,SteuerEinkommen_p50,SteuerEinkommen_p25,SteuerEinkommen_p75
+2020,1,1,Kreis 1,1,1,Verheiratetentarif,115.2,63.9,191.0
+2020,2,2,Kreis 2,1,1,Verheiratetentarif,98.5,62.4,156.6
+2020,3,3,Kreis 3,1,1,Verheiratetentarif,78.2,48.55,121.85
+2020,4,4,Kreis 4,1,1,Verheiratetentarif,65.3,38.0,105.9
+2020,5,5,Kreis 5,1,1,Verheiratetentarif,100.0,58.5,165.5
+2020,6,6,Kreis 6,1,1,Verheiratetentarif,108.1,67.7,174.8
+2020,7,7,Kreis 7,1,1,Verheiratetentarif,135.7,85.0,219.2
+2020,8,8,Kreis 8,1,1,Verheiratetentarif,128.4,80.0,209.95
+2020,9,9,Kreis 9,1,1,Verheiratetentarif,76.6,51.1,110.5
+2020,10,10,Kreis 10,1,1,Verheiratetentarif,94.7,63.6,143.8
+2020,11,11,Kreis 11,1,1,Verheiratetentarif,77.7,49.8,113.6
+2020,12,12,Kreis 12,1,1,Verheiratetentarif,64.2,41.2,89.3
