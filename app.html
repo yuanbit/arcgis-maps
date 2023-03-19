@@ -79,16 +79,9 @@ map.add(marriedLayer);
   container.appendChild(layerSelect);
   view.ui.add(container, "top-right");
 
-  // Set up function to switch visible layer
-  function switchLayer(layer) {
-    if (layer === "basic") {
-      marriedLayer.visible = false;
-      basicLayer.visible = true;
-    } else if (layer === "married") {
-      basicLayer.visible = false;
-      marriedLayer.visible = true;
-    }
-  }
+
+
+
 
   // Set up event listener for dropdown change
   layerSelect.addEventListener("change", function(event) {
@@ -140,22 +133,22 @@ const marriedRender = {
     field: "F2020_married_SteuerEinkommen_p",
     stops: [{
         value: 60,
-        color: "#e5f5f9",
+        color: "#edf8fb",
         label: "60,000-85,000"
       },
       {
         value: 85,
-        color: "#99d8c9",
+        color: "#b3cde3",
         label: "85,001-110,000"
       },
       {
         value: 110,
-        color: "#2ca25f",
+        color: "#8c96c6",
         label: "110,001-160,000"
       },
       {
         value: 160,
-        color: "#006d2c",
+        color: "#88419d",
         label: ">60,000"
       }
     ]
@@ -165,33 +158,40 @@ const marriedRender = {
 basicLayer.renderer = basicRender;
 marriedLayer.renderer = marriedRender;
 
-// Create a legend
 const legend = new Legend({
   view: view,
   layerInfos: [
     {
       layer: basicLayer,
       title: "Income",
-      field: "F2020_Grundtarif_SteuerEinkomme"
+      field: "F2020_Grundtarif_SteuerEinkomme",
+      visible: true
+    },
+    {
+      layer: marriedLayer,
+      title: "Income",
+      field: "F2020_married_SteuerEinkommen_1",
+      visible: false
     }
   ]
 });
 
 view.ui.add(legend, "bottom-right");
 
-// Create a legend
-const mLegend = new Legend({
-  view: view,
-  layerInfos: [
-    {
-      layer:  marriedLayer,
-      title: "Income",
-      field: "F2020_married_SteuerEinkommen_1"
-    }
-  ]
-});
+function switchLayer(layer) {
+  if (layer === "basic") {
+    marriedLayer.visible = false;
+    basicLayer.visible = true;
+    legend.layerInfos[0].visible = true;
+    legend.layerInfos[1].visible = false;
+  } else if (layer === "married") {
+    basicLayer.visible = false;
+    marriedLayer.visible = true;
+    legend.layerInfos[0].visible = false;
+    legend.layerInfos[1].visible = true;
+  }
+}
 
-view.ui.add(mLegend, "bottom-right");
 
  // Set up a listener for the click event on the boundary layer
 view.on("click", function(event) {
@@ -213,6 +213,7 @@ view.on("click", function(event) {
     }
   });
 });
+
 
 
 
