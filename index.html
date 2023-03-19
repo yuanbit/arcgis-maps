@@ -40,191 +40,129 @@
           zoom: 13,
         });
 
-        const featureLayer = new FeatureLayer({
-          url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/incomeboundrieszurich/FeatureServer/0",
-          renderer: {
-            type: "simple",
-            symbol: {
-              type: "simple-fill",
-              color: "rgba(50, 74, 178, 0.2)",
-              outline: {
-                color: [0, 255, 255, 0.2],
-                width: 1,
-              },
-            },
-            visualVariables: [
-        {
-          type: "color",
-          field: "SteuerEinkommen_p50",
-          stops: [
-            { value: 0, color: "rgba(255, 255, 204, 1)" },
-            { value: 50000, color: "rgba(161, 218, 180, 1)" },
-            { value: 100000, color: "rgba(65, 182, 196, 1)" },
-            { value: 150000, color: "rgba(44, 127, 184, 1)" },
-            { value: 200000, color: "rgba(37, 52, 148, 1)" },
-          ],
-          legendOptions: {
-            title: "Income (SteuerEinkommen_p50)",
-          },
-        },
-      ],
-    },
-    outFields: ["bezeichnun", "WIR100OD1007_SteuerEinkommen_p5"],
-  });
+//         const boundryLayer = new FeatureLayer({
+//           url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/zurichboundries/FeatureServer/0"
+//         });
+        
+//         map.add(boundryLayer);
 
-  map.add(featureLayer);
+//         const dataLayer = new FeatureLayer({
+//           url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/testdata/FeatureServer"
+//         });
+
+ 
+          
+//         const query = dataLayer.createQuery();
+// query.where = "StichtagDatJahr = 2020 AND SteuerTarifLang = 'Grundtarif'";
+// query.outFields = ["SteuerEinkommen_p50", "KreisLang"];
+
+// dataLayer.queryFeatures(query)
+// .then(function(response){
+//   // Create a dictionary to hold the SteuerEinkommen_p50 values for each district
+//   const districtData = {};
+//   response.features.forEach(function(feature){
+//     districtData[feature.attributes.KreisLang] = feature.attributes.SteuerEinkommen_p50;
+//   });
 
 
-            // Add a legend to the view
-    require(["esri/widgets/Legend"], function (Legend) {
-      const legend = new Legend({
-        view: view,
-        layerInfos: [
-          {
-            layer: featureLayer,
-            title: "Income distribution",
-          },
-        ],
-      });
+      
+//       // Set up a listener for the click event on the boundary layer
+//       boundryLayer.on("click", function(event) {
+//         const feature = event.features[0];
+//         if (feature) {
+//           // Get the value of SteuerEinkommen_p50 for the district from the dictionary
+//           const medianIncome = districtData[feature.attributes.KreisLang];
 
-      view.ui.add(legend, "bottom-right");
+//           console.log(medianIncome);
 
+//           // Set up the popup for the boundary layer
+//           const popupTemplate = {
+//             title: "{bezeichnun}",
+//             content: "Median Income: ",
+//           };
 
+//           boundryLayer.popupTemplate = popupTemplate;
 
-  view.ui.add(legend, "bottom-right");
-
-
-
-  view.whenLayerView(featureLayer).then(function (layerView) {
-    view.popup.autoOpenEnabled = false;
-
-    view.on("click", function (event) {
-      view.hitTest(event).then(function (response) {
-        const feature = response.results[0].graphic;
-
-        if (feature) {
-          const attributes = feature.attributes;
-          const content =
-            "<b>" +
-            attributes.bezeichnun +
-            "</b><br>" +
-            "Median Income: " +
-            (attributes.WIR100OD1007_SteuerEinkommen_p5 * 1000).toLocaleString('en', {maximumFractionDigits:0});
-          view.popup.content = content;
-          view.popup.open({
-            location: event.mapPoint,
-          });
-        }
-      });
-    });
-
-//     layerView.watch("updating", function (updating) {
-//   if (!updating) {
-//     layerView.queryFeatures().then(function (results) {
-//       const features = [results]; // wrap results in an array
-//       results.forEach(function (feature) {
-//         const attributes = feature.attributes;
-//         if (attributes.WIR100OD1007_SteuerEinkommen_p5 !== undefined) {
-//           const avgValue = attributes.WIR100OD1007_SteuerEinkommen_p5 * 1000;
-
-//           const point = new Point({
-//             longitude: feature.geometry.centroid.longitude,
-//             latitude: feature.geometry.centroid.latitude
+//           // Open the popup
+//           view.popup.open({
+//             location: event.mapPoint,
+//             features: [feature],
 //           });
-
-//           const textSymbol = new TextSymbol({
-//             text: `Avg: ${avgValue}`,
-//             color: "#fff",
-//             font: {
-//               size: 12,
-//               weight: "bold"
-//             }
-//           });
-
-//           const graphic = new Graphic({
-//             geometry: point,
-//             symbol: textSymbol
-//           });
-
-//           view.graphics.add(graphic);
 //         }
 //       });
 //     });
-//   }
-// });
-
-
-
-
-
-      // View all the field names
-      const query = featureLayer.createQuery();
-query.where = "1=0"; // set a where clause that always evaluates to false to return no features
-query.outFields = ["*"]; // set the outFields property to return all fields
-query.returnDistinctValues = true; // set returnDistinctValues to true to eliminate duplicate field names
-query.returnGeometry = false; // don't return any geometry
-
-featureLayer
-  .queryFeatures(query)
-  .then((result) => {
-    const fields = result.fields.map((field) => field.name);
-    console.log(fields);
-  })
-  .catch((error) => console.error(error));
-
-
-// Create a new Query object to get the average of the WIR100OD1007_SteuerEinkommen_p5 field
-
-// const query = featureLayer.createQuery();
-
-// featureLayer
-//   .queryFeatures(query)
-//   .then((result) => {
-//     result.features.forEach((feature) => {
-//       console.log(feature.attributes.WIR100OD1007_SteuerEinkommen_p5);
-//     });
-//   })
-//   .catch((error) => console.error(error));
-
-
-
-// // Execute the query and add the results to the map
-// featureLayer.queryFeatures(query).then(function (result) {
-//   const features = result.features;
-  
-//   // Loop through each feature and add a text symbol at its centroid to display the average value
-//   features.forEach(function (feature) {
-//     const attributes = feature.attributes;
-//     const avgValue = attributes.avg_WIR100OD1007_SteuerEinkommen_p5;
-    
-//     const point = new Point({
-//       longitude: feature.geometry.centroid.longitude,
-//       latitude: feature.geometry.centroid.latitude
-//     });
-
-//     const textSymbol = new TextSymbol({
-//       text: `Avg: ${avgValue}`,
-//       color: "#fff",
-//       font: {
-//         size: 12,
-//         weight: "bold"
-//       }
-//     });
-
-//     const graphic = new Graphic({
-//       geometry: point,
-//       symbol: textSymbol
-//     });
-
-//     view.graphics.add(graphic);
+//   }).catch(function(error) {
+//     console.error(error);
 //   });
 // });
 
+// });
+
+const boundryLayer = new FeatureLayer({
+  url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/zurichboundries/FeatureServer/0"
+});
+map.add(boundryLayer);
+
+const dataLayer = new FeatureLayer({
+  url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/testdata/FeatureServer"
+});
+
+const query = dataLayer.createQuery();
+query.where = "StichtagDatJahr = 2020 AND SteuerTarifLang = 'Grundtarif'";
+query.outFields = ["SteuerEinkommen_p50", "KreisLang"];
+
+dataLayer.queryFeatures(query).then(function(response){
+  // Create a dictionary to hold the SteuerEinkommen_p50 values for each district
+  const districtData = {};
+  response.features.forEach(function(feature){
+    districtData[feature.attributes.KreisLang] = feature.attributes.SteuerEinkommen_p50;
+  });
+
+  const query = boundryLayer.createQuery();
+  query.where = "1=1";
+  query.outFields = ["*"];
+  
+  boundryLayer.queryFeatures(query).then(function(result) {
+    result.features.forEach(function(feature) {
+      const attributes = feature.attributes;
+
+
+  // Set up the popup for the boundary layer
+  const popupTemplate = {
+    title: "{bezeichnun}",
+    content: "Median Income: {medianIncome}",
+  };
+  boundryLayer.popupTemplate = popupTemplate;
+
+  // Set up a listener for the click event on the boundary layer
+  view.on("click", function(event) {
+    view.hitTest(event).then(function(response) {
+      const feature = response.results[0].graphic;
+      if (feature && feature.layer === boundryLayer) {
+        // Get the value of SteuerEinkommen_p50 for the district from the dictionary
+        const medianIncome = districtData[attributes.bezeichnun];
+        
+        // Update the popup content with the median income
+        const content = popupTemplate.content.replace('{medianIncome}', medianIncome);
+        boundryLayer.popupTemplate.content = content;
+
+        // Open the popup
+        view.popup.open({
+          location: event.mapPoint,
+          features: [feature],
+        });
+      }
+    });
+  });
+})
+});
+
+});
 });
 
 
- });
-});
+
+
 </script>
 </head>
 <body>
