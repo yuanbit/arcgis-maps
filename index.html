@@ -40,63 +40,7 @@
           zoom: 13,
         });
 
-//         const boundryLayer = new FeatureLayer({
-//           url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/zurichboundries/FeatureServer/0"
-//         });
-        
-//         map.add(boundryLayer);
 
-//         const dataLayer = new FeatureLayer({
-//           url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/testdata/FeatureServer"
-//         });
-
- 
-          
-//         const query = dataLayer.createQuery();
-// query.where = "StichtagDatJahr = 2020 AND SteuerTarifLang = 'Grundtarif'";
-// query.outFields = ["SteuerEinkommen_p50", "KreisLang"];
-
-// dataLayer.queryFeatures(query)
-// .then(function(response){
-//   // Create a dictionary to hold the SteuerEinkommen_p50 values for each district
-//   const districtData = {};
-//   response.features.forEach(function(feature){
-//     districtData[feature.attributes.KreisLang] = feature.attributes.SteuerEinkommen_p50;
-//   });
-
-
-      
-//       // Set up a listener for the click event on the boundary layer
-//       boundryLayer.on("click", function(event) {
-//         const feature = event.features[0];
-//         if (feature) {
-//           // Get the value of SteuerEinkommen_p50 for the district from the dictionary
-//           const medianIncome = districtData[feature.attributes.KreisLang];
-
-//           console.log(medianIncome);
-
-//           // Set up the popup for the boundary layer
-//           const popupTemplate = {
-//             title: "{bezeichnun}",
-//             content: "Median Income: ",
-//           };
-
-//           boundryLayer.popupTemplate = popupTemplate;
-
-//           // Open the popup
-//           view.popup.open({
-//             location: event.mapPoint,
-//             features: [feature],
-//           });
-//         }
-//       });
-//     });
-//   }).catch(function(error) {
-//     console.error(error);
-//   });
-// });
-
-// });
 
 const boundryLayer = new FeatureLayer({
   url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/zurichboundries/FeatureServer/0"
@@ -118,47 +62,59 @@ dataLayer.queryFeatures(query).then(function(response){
     districtData[feature.attributes.KreisLang] = feature.attributes.SteuerEinkommen_p50;
   });
 
-  const query = boundryLayer.createQuery();
-  query.where = "1=1";
-  query.outFields = ["*"];
-  
-  boundryLayer.queryFeatures(query).then(function(result) {
-    result.features.forEach(function(feature) {
-      const attributes = feature.attributes;
+ 
 
 
-  // Set up the popup for the boundary layer
-  const popupTemplate = {
-    title: "{bezeichnun}",
-    content: "Median Income: {medianIncome}",
-  };
-  boundryLayer.popupTemplate = popupTemplate;
+
 
   // Set up a listener for the click event on the boundary layer
   view.on("click", function(event) {
-    view.hitTest(event).then(function(response) {
-      const feature = response.results[0].graphic;
-      if (feature && feature.layer === boundryLayer) {
-        // Get the value of SteuerEinkommen_p50 for the district from the dictionary
-        const medianIncome = districtData[attributes.bezeichnun];
-        
-        // Update the popup content with the median income
-        const content = popupTemplate.content.replace('{medianIncome}', medianIncome);
-        boundryLayer.popupTemplate.content = content;
+  view.hitTest(event).then(function(response) {
+    const feature = response.results[0].graphic;
+    if (feature) {
+      const query = boundryLayer.createQuery();
+      query.geometry = event.mapPoint;
+      boundryLayer.queryFeatures(query).then(function(response) {
+        const attributes = response.features[0].attributes;
 
-        // Open the popup
-        view.popup.open({
-          location: event.mapPoint,
-          features: [feature],
-        });
-      }
-    });
+        console.log(attributes.bezeichnun);
+        console.log(districtData[attributes.bezeichnun]);
+
+          // Set up the popup for the boundary layer
+    const popupTemplate = {
+    title: "{bezeichnun}",
+    content: "Median Income: " + (Math.round(districtData[attributes.bezeichnun])*1000).toLocaleString('en', {maximumFractionDigits: 0}) + " CHF",
+  };
+  boundryLayer.popupTemplate = popupTemplate;
+
+      });
+    }
   });
-})
+});
+});
 });
 
-});
-});
+
+
+        // Get the value of SteuerEinkommen_p50 for the district from the dictionary
+        //const medianIncome = (Math.round(districtData[attributes.bezeichnun])*1000).toLocaleString('en', {maximumFractionDigits: 0}) + " CHF";
+      //   const medianIncome = "hi"
+       
+
+      //   // Update the popup content with the median income
+      //   const content = popupTemplate.content.replace('{medianIncome}', medianIncome);
+      //   boundryLayer.popupTemplate.content = content;
+
+      //   // Open the popup
+      //   view.popup.open({
+      //     location: event.mapPoint,
+      //     features: [feature],
+      //   });
+      // }
+
+
+
+
 
 
 
