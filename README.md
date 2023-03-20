@@ -1,4 +1,4 @@
-## 2020 Median Income of Zurich City of Single or Married Households
+## Map Visualization of the Median Income of Zurich City in 2020
 
 ### View Map [here](https://yuanbit.github.io/arcgis-maps/)
 
