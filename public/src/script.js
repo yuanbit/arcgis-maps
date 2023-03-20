@@ -1,102 +1,72 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>Zurich Median Income Map</title>
-
-    <style>
-      html,
-      body,
-      #viewDiv {
-        padding: 0;
-        margin: 0;
-        height: 100%;
-        width: 100%;
-      }
-    </style>
-
-    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/dark/main.css">
-    <script src="https://js.arcgis.com/4.26/"></script>
-    <script src="config.js"></script>
-
-
-
-    <script>
-      require([
-        "esri/config",
-        "esri/Map",
-        "esri/views/MapView",
-        "esri/layers/FeatureLayer",
-        "esri/widgets/Legend",
-        "esri/WebMap",
-        "esri/config"
-      ], function (esriConfig, Map, MapView, FeatureLayer, Legend, WebMap, esriConfig) {
-        esriConfig.apiKey = apiKey;
-
-        const basicLayer = new FeatureLayer({
-    url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/2020basic/FeatureServer/0",
-    opacity: .75
-  });
-
-  const marriedLayer = new FeatureLayer({
-    url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/2020marriedshape/FeatureServer/0",
-    visible: false,
-    opacity: .75
-  });
-
-  const map = new Map({
-    basemap: "arcgis-dark-gray",
-    layers: [basicLayer, marriedLayer],
-    
-  });
-
-  const view = new MapView({
-    container: "viewDiv",
-    map: map,
-    center: [8.5417, 47.3769],
-    zoom: 13,
-  });
-
-// Add the layers to the map
-map.add(basicLayer);
-map.add(marriedLayer);
-
-
-// Create dropdown menu
-const layerSelect = document.createElement("select");
-layerSelect.setAttribute("id", "layer-select");
-
-const basicOption = document.createElement("option");
-basicOption.setAttribute("value", "basic");
-basicOption.innerText = "Single";
-layerSelect.appendChild(basicOption);
-
-const marriedOption = document.createElement("option");
-marriedOption.setAttribute("value", "married");
-marriedOption.innerText = "Married";
-layerSelect.appendChild(marriedOption);
-
-// Add dropdown menu to view
-const container = document.createElement("div");
-container.setAttribute("class", "esri-widget");
-const maritalStatusText = document.createElement("span");
-maritalStatusText.innerText = "Marital Status: ";
-maritalStatusText.style.color = "#fff";
-container.appendChild(maritalStatusText);
-container.appendChild(layerSelect);
-view.ui.add(container, "top-right");
-
-// Set up event listener for dropdown change
-layerSelect.addEventListener("change", function(event) {
-  const selectedLayer = event.target.value;
-  switchLayer(selectedLayer);
-});
-
-
-
-
-// Add CSS styles to the dropdown menu
+require([
+    "esri/config",
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/layers/FeatureLayer",
+    "esri/widgets/Legend",
+    "esri/WebMap",
+    "esri/config"
+  ], function (esriConfig, Map, MapView, FeatureLayer, Legend, WebMap, esriConfig) {
+    esriConfig.apiKey = apiKey;
+  
+    const basicLayer = new FeatureLayer({
+      url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/2020basic/FeatureServer/0",
+      opacity: 0.75,
+    });
+  
+    const marriedLayer = new FeatureLayer({
+      url: "https://services1.arcgis.com/aj3aipVBpIl0LroJ/arcgis/rest/services/2020marriedshape/FeatureServer/0",
+      visible: false,
+      opacity: 0.75,
+    });
+  
+    const map = new Map({
+      basemap: "arcgis-dark-gray",
+      layers: [basicLayer, marriedLayer],
+    });
+  
+    const view = new MapView({
+      container: "viewDiv",
+      map: map,
+      center: [8.5417, 47.3769],
+      zoom: 13,
+    });
+  
+    // Add the layers to the map
+    map.add(basicLayer);
+    map.add(marriedLayer);
+  
+    // Create dropdown menu
+    const layerSelect = document.createElement("select");
+    layerSelect.setAttribute("id", "layer-select");
+  
+    const basicOption = document.createElement("option");
+    basicOption.setAttribute("value", "basic");
+    basicOption.innerText = "Single";
+    layerSelect.appendChild(basicOption);
+  
+    const marriedOption = document.createElement("option");
+    marriedOption.setAttribute("value", "married");
+    marriedOption.innerText = "Married";
+    layerSelect.appendChild(marriedOption);
+  
+    // Add dropdown menu to view
+    const container = document.createElement("div");
+    container.setAttribute("class", "esri-widget");
+    const maritalStatusText = document.createElement("span");
+    maritalStatusText.innerText = "Marital Status: ";
+    maritalStatusText.style.color = "#fff";
+    container.appendChild(maritalStatusText);
+    container.appendChild(layerSelect);
+    view.ui.add(container, "top-right");
+  
+    // Set up event listener for dropdown change
+    layerSelect.addEventListener("change", function (event) {
+      const selectedLayer = event.target.value;
+      switchLayer(selectedLayer);
+    });
+  
+    // Add CSS styles to the dropdown menu
 container.style.backgroundColor = "#252525";
 container.style.paddingLeft = "24px";
 container.style.paddingRight = "24px";
@@ -290,11 +260,3 @@ view.on("click", function(event) {
 
 
 });
-</script>
-</head>
-<body>
-  <div id="viewDiv">
-
-  </div>
-</body>
-</html>
