@@ -7,6 +7,7 @@ require([
     "esri/WebMap",
     "esri/config"
   ], function (esriConfig, Map, MapView, FeatureLayer, Legend, WebMap, esriConfig) {
+    esriConfig.apiKey = "AAPKa7db61b8a8e34afb839d9cf839a13c8ekRaLwpqcG4xHvUTmUaG0F6KrnJhFmGqm3Dm-YLPG9t8GzTYkKQfik5bawlrorveN";
     
   
     const basicLayer = new FeatureLayer({
